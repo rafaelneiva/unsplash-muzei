@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rafaelneiva.muzeiunsplash
+package com.rafaelneiva.muzeiunsplash.muzeiunsplash
 
 import android.content.Intent
 import android.util.Log
@@ -22,6 +22,8 @@ import androidx.core.net.toUri
 import com.google.android.apps.muzei.api.UserCommand
 import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.provider.MuzeiArtProvider
+import com.rafaelneiva.muzeiunsplash.ATTRIBUTION_QUERY_PARAMETERS
+import com.rafaelneiva.muzeiunsplash.R
 import java.io.IOException
 import java.io.InputStream
 
@@ -67,7 +69,9 @@ class UnsplashExampleArtProvider : MuzeiArtProvider() {
         return super.openFile(artwork).also {
             artwork.token?.run {
                 try {
-                    UnsplashService.trackDownload(this)
+                    UnsplashService.trackDownload(
+                        this
+                    )
                 } catch (e: IOException) {
                     Log.w(TAG, "Error reporting download to Unsplash", e)
                 }

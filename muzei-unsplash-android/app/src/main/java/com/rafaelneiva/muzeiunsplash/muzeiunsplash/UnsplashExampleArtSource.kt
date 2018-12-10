@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rafaelneiva.muzeiunsplash
+package com.rafaelneiva.muzeiunsplash.muzeiunsplash
 
 import android.content.Intent
 import android.util.Log
@@ -23,7 +23,10 @@ import com.google.android.apps.muzei.api.Artwork
 import com.google.android.apps.muzei.api.MuzeiArtSource
 import com.google.android.apps.muzei.api.RemoteMuzeiArtSource
 import com.google.android.apps.muzei.api.UserCommand
-import com.rafaelneiva.muzeiunsplash.UnsplashService.Photo
+import com.rafaelneiva.muzeiunsplash.ATTRIBUTION_QUERY_PARAMETERS
+import com.rafaelneiva.muzeiunsplash.BuildConfig
+import com.rafaelneiva.muzeiunsplash.R
+import com.rafaelneiva.muzeiunsplash.muzeiunsplash.UnsplashService.Photo
 import java.io.IOException
 import java.util.*
 
@@ -94,7 +97,10 @@ class UnsplashExampleArtSource : RemoteMuzeiArtSource(SOURCE_NAME) {
                     COMMAND_ID_VIEW_PROFILE,
                     getString(R.string.action_view_profile, photo.user.name)
                 ),
-                UserCommand(COMMAND_ID_VISIT_UNSPLASH, getString(R.string.action_visit_unsplash))
+                UserCommand(
+                    COMMAND_ID_VISIT_UNSPLASH, getString(
+                        R.string.action_visit_unsplash
+                    ))
             )
         )
         scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rafaelneiva.muzeiunsplash
+package com.rafaelneiva.muzeiunsplash.muzeiunsplash
 
 import android.content.Context
 import android.util.Log
@@ -23,6 +23,7 @@ import androidx.work.*
 import com.google.android.apps.muzei.api.provider.Artwork
 import com.google.android.apps.muzei.api.provider.ProviderContract
 import com.rafaelneiva.muzeiunsplash.BuildConfig.UNSPLASH_AUTHORITY
+import com.rafaelneiva.muzeiunsplash.R
 
 class UnsplashExampleWorker(
     context: Context,
