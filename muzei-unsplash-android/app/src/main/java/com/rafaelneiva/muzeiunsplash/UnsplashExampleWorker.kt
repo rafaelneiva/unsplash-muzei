@@ -51,7 +51,12 @@ class UnsplashExampleWorker(
             UnsplashService.randomPhotosByCategories()
         } catch (e: Exception) {
             Log.w(TAG, "Error reading Unsplash response", e)
-            return Result.RETRY
+            return Result.retry()
+        }
+
+        if (photos.isEmpty()) {
+            Log.w(TAG, "No photos returned from API.")
+            return Result.failure()
         }
 
         val attributionString = applicationContext.getString(R.string.attribution)
@@ -72,6 +77,6 @@ class UnsplashExampleWorker(
                 artwork
             )
         }
-        return Result.SUCCESS
+        return Result.success()
     }
 }
