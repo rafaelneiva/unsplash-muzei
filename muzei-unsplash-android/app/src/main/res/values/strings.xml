@@ -5,4 +5,7 @@
     <string name="action_visit_unsplash">Visit Unsplash</string>
     <string name="unsplash_link">https://unsplash.com/</string>
     <string name="description">Popular by category from Unsplash</string>
+    <string name="total_photos">%s photos</string>
+    <string name="updated_at">Updated at: %s</string>
+    <string name="shpr_collection_id">shpr_collection_id</string>
 </resources>

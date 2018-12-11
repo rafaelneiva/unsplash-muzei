@@ -26,7 +26,7 @@ import com.rafaelneiva.muzeiunsplash.BuildConfig.UNSPLASH_AUTHORITY
 import com.rafaelneiva.muzeiunsplash.R
 
 class UnsplashExampleWorker(
-    context: Context,
+    private val context: Context,
     workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
 
@@ -49,7 +49,7 @@ class UnsplashExampleWorker(
 
     override fun doWork(): Result {
         val photos = try {
-            UnsplashService.randomPhotosByCategories()
+            UnsplashService.randomPhotosByCategories(context)
         } catch (e: Exception) {
             Log.w(TAG, "Error reading Unsplash response", e)
             return Result.retry()
@@ -62,7 +62,7 @@ class UnsplashExampleWorker(
 
         val providerClient = ProviderContract.getProviderClient(applicationContext, UNSPLASH_AUTHORITY)
         val attributionString = applicationContext.getString(R.string.attribution)
-        providerClient.addArtwork(photos.map { photo ->
+        providerClient.setArtwork(photos.map { photo ->
             Artwork().apply {
                 token = photo.id
                 title = photo.description ?: attributionString

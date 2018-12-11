@@ -54,4 +54,5 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha01'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation "android.arch.paging:runtime:1.0.1"
+    implementation 'br.com.zup:multi-state-layout:1.0.3'
 }

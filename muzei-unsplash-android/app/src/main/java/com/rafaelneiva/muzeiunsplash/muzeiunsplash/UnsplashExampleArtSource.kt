@@ -39,7 +39,7 @@ class UnsplashExampleArtSource : RemoteMuzeiArtSource(SOURCE_NAME) {
         private const val COMMAND_ID_VIEW_PROFILE = 1
         private const val COMMAND_ID_VISIT_UNSPLASH = 2
 
-        private const val ROTATE_TIME_MILLIS = 3 * 60 * 60 * 1000 // rotate every 3 hours
+        private const val ROTATE_TIME_MILLIS = 3 * 60 * 60 * 1000 // rotate every 3 hours // fixme
     }
 
     @Throws(RemoteMuzeiArtSource.RetryException::class)
@@ -47,7 +47,7 @@ class UnsplashExampleArtSource : RemoteMuzeiArtSource(SOURCE_NAME) {
         val currentToken = currentArtwork?.token
 
         val photos = try {
-            UnsplashService.randomPhotosByCategories()
+            UnsplashService.randomPhotosByCategories(application)
         } catch (e: IOException) {
             Log.w(TAG, "Error reading Unsplash response", e)
             throw RemoteMuzeiArtSource.RetryException()

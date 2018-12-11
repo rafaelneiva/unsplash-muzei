@@ -16,6 +16,8 @@
 
 package com.rafaelneiva.muzeiunsplash.muzeiunsplash
 
+import android.content.Context
+import android.preference.PreferenceManager
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +27,7 @@ import androidx.paging.PageKeyedDataSource
 import androidx.paging.PagedList
 import com.rafaelneiva.muzeiunsplash.ATTRIBUTION_QUERY_PARAMETERS
 import com.rafaelneiva.muzeiunsplash.CONSUMER_KEY
+import com.rafaelneiva.muzeiunsplash.R
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -36,6 +39,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 import java.io.IOException
+import java.util.*
 
 interface UnsplashService {
 
@@ -70,9 +74,12 @@ interface UnsplashService {
                 ?: throw IOException("Response was null")
         }
 
+        private const val defaultCategory: Int = 540518
+
         @Throws(IOException::class)
-        internal fun randomPhotosByCategories(): List<Photo> {
-            return createService().collectionPhotos("540518").execute().body()
+        internal fun randomPhotosByCategories(context: Context): List<Photo> {
+            val collectionId = PreferenceManager.getDefaultSharedPreferences(context).getInt(context.getString(R.string.shpr_collection_id), defaultCategory)
+            return createService().collectionPhotos(collectionId.toString()).execute().body()
                 ?: throw IOException("Response was null")
         }
 
@@ -94,7 +101,7 @@ interface UnsplashService {
     @get:GET("photos/curated?order_by=popular&per_page=30")
     val popularPhotos: Call<List<Photo>>
 
-    @GET("collections/{collectionId}/photos")
+    @GET("collections/{collectionId}/photos?per_page=30")
     fun collectionPhotos(@Path("collectionId") collection: String): Call<List<Photo>>
 
     @GET("photos/{id}/download")
@@ -132,7 +139,8 @@ interface UnsplashService {
         val title: String,
         val description: String,
         val total_photos: Int,
-        val cover_photo: Photo
+        val cover_photo: Photo,
+        val updated_at: Date
     )
 }
 

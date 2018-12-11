@@ -11,9 +11,11 @@
 
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clickableView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:foreground="?selectableItemBackgroundBorderless"
         android:orientation="horizontal">
 
         <ImageView
@@ -22,14 +24,37 @@
             android:layout_height="100dp"
             android:scaleType="centerCrop"
             app:img_url="@{collection.cover_photo.urls.small}"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            tools:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/tvName"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@{collection.title}" />
+            android:layout_marginStart="@dimen/small_size"
+            android:layout_marginTop="@dimen/small_size"
+            android:layout_marginEnd="@dimen/small_size"
+            android:text="@{collection.title}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivThumb"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Collection Name" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_size"
+            android:layout_marginTop="@dimen/small_size"
+            android:layout_marginEnd="@dimen/small_size"
+            android:text="@{String.format(@string/total_photos, collection.total_photos)}"
+            app:layout_constraintStart_toEndOf="@id/ivThumb"
+            app:layout_constraintTop_toBottomOf="@+id/tvName"
+            tools:text="234 photos" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
