@@ -25,18 +25,18 @@ import com.google.android.apps.muzei.api.provider.ProviderContract
 import com.rafaelneiva.muzeiunsplash.BuildConfig.UNSPLASH_AUTHORITY
 import com.rafaelneiva.muzeiunsplash.R
 
-class UnsplashExampleWorker(
+class MuzeiUnsplashWorker(
     private val context: Context,
     workerParams: WorkerParameters
 ) : Worker(context, workerParams) {
 
     companion object {
-        private const val TAG = "UnsplashExample"
+        private const val TAG = "MuzeiUnsplash"
 
         internal fun enqueueLoad() {
             val workManager = WorkManager.getInstance()
             workManager.enqueue(
-                OneTimeWorkRequestBuilder<UnsplashExampleWorker>()
+                OneTimeWorkRequestBuilder<MuzeiUnsplashWorker>()
                     .setConstraints(
                         Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)

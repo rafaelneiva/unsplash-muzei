@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.zup.multistatelayout.MultiStateLayout
 import com.rafaelneiva.muzeiunsplash.databinding.ListItemCollectionBinding
-import com.rafaelneiva.muzeiunsplash.muzeiunsplash.UnsplashExampleWorker
+import com.rafaelneiva.muzeiunsplash.muzeiunsplash.MuzeiUnsplashWorker
 import com.rafaelneiva.muzeiunsplash.muzeiunsplash.UnsplashService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
@@ -47,7 +47,7 @@ class SettingsActivity : AppCompatActivity(), CollectionsAdapter.ClickListener {
         PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(getString(R.string.shpr_collection_id), collection.id).apply()
 
         GlobalScope.launch {
-            UnsplashExampleWorker.enqueueLoad()
+            MuzeiUnsplashWorker.enqueueLoad()
             setResult(Activity.RESULT_OK)
             finish()
         }
