@@ -19,6 +19,10 @@ package com.rafaelneiva.muzeiunsplash.muzeiunsplash
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PageKeyedDataSource
+import androidx.paging.PagedList
 import com.rafaelneiva.muzeiunsplash.ATTRIBUTION_QUERY_PARAMETERS
 import com.rafaelneiva.muzeiunsplash.CONSUMER_KEY
 import okhttp3.OkHttpClient
@@ -30,32 +34,32 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 import java.io.IOException
 
 interface UnsplashService {
 
     companion object {
 
-        private fun createService(): UnsplashService {
+        fun createService(): UnsplashService {
             val logging = HttpLoggingInterceptor()
             logging.level = HttpLoggingInterceptor.Level.BODY
 
             val okHttpClient = OkHttpClient.Builder()
-                    .addInterceptor { chain ->
-                        var request = chain.request()
-                        val url = request.url().newBuilder()
-                                .addQueryParameter("client_id", CONSUMER_KEY).build()
-                        request = request.newBuilder().url(url).build()
-                        chain.proceed(request)
-                    }
-                    .addInterceptor(logging)
-                    .build()
+                .addInterceptor { chain ->
+                    var request = chain.request()
+                    val url = request.url().newBuilder().addQueryParameter("client_id", CONSUMER_KEY).build()
+                    request = request.newBuilder().url(url).build()
+                    chain.proceed(request)
+                }
+                .addInterceptor(logging)
+                .build()
 
             val retrofit = Retrofit.Builder()
-                    .baseUrl("https://api.unsplash.com/")
-                    .client(okHttpClient)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
+                .baseUrl("https://api.unsplash.com/")
+                .client(okHttpClient)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
 
             return retrofit.create<UnsplashService>(UnsplashService::class.java)
         }
@@ -63,13 +67,13 @@ interface UnsplashService {
         @Throws(IOException::class)
         internal fun popularPhotos(): List<Photo> {
             return createService().popularPhotos.execute().body()
-                    ?: throw IOException("Response was null")
+                ?: throw IOException("Response was null")
         }
 
         @Throws(IOException::class)
         internal fun randomPhotosByCategories(): List<Photo> {
             return createService().collectionPhotos("540518").execute().body()
-                    ?: throw IOException("Response was null")
+                ?: throw IOException("Response was null")
         }
 
         @Throws(IOException::class)
@@ -77,22 +81,13 @@ interface UnsplashService {
             createService().trackDownload(photoId).execute()
         }
 
-        @Throws(IOException::class)
-        internal fun getCollections(): LiveData<List<Collection>> {
-            val collections = MutableLiveData<List<Collection>>()
-            createService().getCollections().enqueue(object : Callback<List<Collection>> {
-                override fun onFailure(call: Call<List<Collection>>, t: Throwable) {
-                    throw IOException(t.localizedMessage)
-                }
-
-                override fun onResponse(call: Call<List<Collection>>, response: Response<List<Collection>>) {
-                    if (response.isSuccessful) collections.value = response.body()
-                    else throw IOException("Response failed")
-                }
-
-            })
-
-            return collections
+        internal fun getCollections(): LiveData<PagedList<Collection>> {
+            val config = PagedList.Config.Builder()
+                .setPageSize(30)
+                .setInitialLoadSizeHint(30)
+                .setEnablePlaceholders(false)
+                .build()
+            return LivePagedListBuilder<Int, Collection>(CollectionDataSourceFactory(), config).build()
         }
     }
 
@@ -105,35 +100,86 @@ interface UnsplashService {
     @GET("photos/{id}/download")
     fun trackDownload(@Path("id") photoId: String): Call<Any>
 
-    @GET("collections")
-    fun getCollections(): Call<List<Collection>>
+    @GET("collections/featured?per_page=30")
+    fun getCollections(@Query("page") page: Int): Call<List<Collection>>
 
     data class BaseResponse(val results: List<Photo>)
 
     data class Photo(
-            val id: String,
-            val urls: Urls,
-            val description: String?,
-            val user: User,
-            val links: Links
+        val id: String,
+        val urls: Urls,
+        val description: String?,
+        val user: User,
+        val links: Links
     )
 
-    data class Urls(val full: String)
+    data class Urls(
+        val full: String,
+        val small: String
+    )
 
     data class Links(val html: String) {
         val webUri get() = "$html$ATTRIBUTION_QUERY_PARAMETERS".toUri()
     }
 
     data class User(
-            val name: String,
-            val links: Links
+        val name: String,
+        val links: Links
     )
 
     data class Collection(
-            val id: Long,
-            val title: String,
-            val description: String,
-            val total_photos: Int,
-            val cover_photo: Photo
+        val id: Int,
+        val title: String,
+        val description: String,
+        val total_photos: Int,
+        val cover_photo: Photo
     )
+}
+
+class CollectionDataSource : PageKeyedDataSource<Int, UnsplashService.Collection>() {
+
+    override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, UnsplashService.Collection>) {
+        val initialPage = 1
+        UnsplashService.createService().getCollections(initialPage).enqueue(object : Callback<List<UnsplashService.Collection>> {
+            override fun onFailure(call: Call<List<UnsplashService.Collection>>, t: Throwable) {
+                throw IOException(t.localizedMessage)
+            }
+
+            override fun onResponse(call: Call<List<UnsplashService.Collection>>, response: Response<List<UnsplashService.Collection>>) {
+                if (response.isSuccessful) {
+                    callback.onResult(response.body()!!, initialPage, response.headers().get("X-Total")?.toInt()!!,null, initialPage + 1)
+                } else throw IOException("Response failed")
+            }
+
+        })
+    }
+
+    override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, UnsplashService.Collection>) {
+        val page = params.key
+        UnsplashService.createService().getCollections(page).enqueue(object : Callback<List<UnsplashService.Collection>> {
+            override fun onFailure(call: Call<List<UnsplashService.Collection>>, t: Throwable) {
+                throw IOException(t.localizedMessage)
+            }
+
+            override fun onResponse(call: Call<List<UnsplashService.Collection>>, response: Response<List<UnsplashService.Collection>>) {
+                if (response.isSuccessful) {
+                    callback.onResult(response.body()!!, page + 1)
+                } else throw IOException("Response failed")
+            }
+
+        })
+    }
+
+    override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, UnsplashService.Collection>) {
+    }
+}
+
+class CollectionDataSourceFactory() : DataSource.Factory<Int, UnsplashService.Collection>() {
+    private val usersDataSourceLiveData = MutableLiveData<CollectionDataSource>()
+
+    override fun create(): DataSource<Int, UnsplashService.Collection> {
+        val usersDataSource = CollectionDataSource()
+        usersDataSourceLiveData.postValue(usersDataSource)
+        return usersDataSource
+    }
 }
