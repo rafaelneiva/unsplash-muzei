@@ -39,6 +39,8 @@ class SettingsActivity : AppCompatActivity(), CollectionsAdapter.ClickListener {
             mslContent.setState(MultiStateLayout.State.CONTENT)
             adapter.submitList(it)
         })
+
+        title = getString(R.string.settings_title)
     }
 
     override fun onClickItem(collection: UnsplashService.Collection) {

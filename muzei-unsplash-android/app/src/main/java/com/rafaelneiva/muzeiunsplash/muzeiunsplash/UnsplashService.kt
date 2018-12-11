@@ -110,8 +110,6 @@ interface UnsplashService {
     @GET("collections/featured?per_page=30")
     fun getCollections(@Query("page") page: Int): Call<List<Collection>>
 
-    data class BaseResponse(val results: List<Photo>)
-
     data class Photo(
         val id: String,
         val urls: Urls,
