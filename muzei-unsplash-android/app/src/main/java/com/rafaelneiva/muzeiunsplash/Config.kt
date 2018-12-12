@@ -1,4 +1,4 @@
 package com.rafaelneiva.muzeiunsplash
 
-const val CONSUMER_KEY = "5d0c26f13a238c5639bfb0a80ccea193604dda05d09ed9323f6ce63b9b7daa7c"
+const val CONSUMER_KEY = "8dc614af36e2e0aecbd149f5dfdc34c05a8098811679110bc08a898f322ae3e8"
 const val ATTRIBUTION_QUERY_PARAMETERS = "?utm_source=muzei_unsplash_android&utm_medium=referral"

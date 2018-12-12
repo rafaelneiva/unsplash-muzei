@@ -154,7 +154,7 @@ class CollectionDataSource : PageKeyedDataSource<Int, UnsplashService.Collection
             override fun onResponse(call: Call<List<UnsplashService.Collection>>, response: Response<List<UnsplashService.Collection>>) {
                 if (response.isSuccessful) {
                     callback.onResult(response.body()!!, initialPage, response.headers().get("X-Total")?.toInt()!!,null, initialPage + 1)
-                } else throw IOException("Response failed")
+                }
             }
 
         })
@@ -170,7 +170,7 @@ class CollectionDataSource : PageKeyedDataSource<Int, UnsplashService.Collection
             override fun onResponse(call: Call<List<UnsplashService.Collection>>, response: Response<List<UnsplashService.Collection>>) {
                 if (response.isSuccessful) {
                     callback.onResult(response.body()!!, page + 1)
-                } else throw IOException("Response failed")
+                }
             }
 
         })
