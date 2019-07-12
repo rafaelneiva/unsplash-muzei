@@ -101,13 +101,13 @@ interface UnsplashService {
     @get:GET("photos/curated?order_by=popular&per_page=30")
     val popularPhotos: Call<List<Photo>>
 
-    @GET("collections/{collectionId}/photos?per_page=30")
+    @GET("collections/{collectionId}/photos?per_page=100")
     fun collectionPhotos(@Path("collectionId") collection: String): Call<List<Photo>>
 
     @GET("photos/{id}/download")
     fun trackDownload(@Path("id") photoId: String): Call<Any>
 
-    @GET("collections/featured?per_page=30")
+    @GET("collections/featured?per_page=10")
     fun getCollections(@Query("page") page: Int): Call<List<Collection>>
 
     data class Photo(
